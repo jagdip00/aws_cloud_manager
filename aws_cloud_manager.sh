@@ -94,9 +94,12 @@ create_IAM_users() {
     #Loop through the array and create IAM user for each employee
     for name in "${names[@]}"; do
         aws iam create-user --user-name "$name"
+        #check if the exit code is 0
         if [ $? -eq 0 ]; then
+        #prints success if exit code is 0
            echo "IAM user for '$name' created successfully."
         else
+        #prints unsuccessfull if the code is 1
             echo "Failed to create IAM user for '$bucket_name'."
         fi
     done
@@ -105,20 +108,28 @@ create_IAM_users() {
 create_IAM_group() {
 
     groupname="Admins"
-
+    #creates an IAM group with whatever name is set for $groupname
     aws iam create-group --group-name "$groupname"
+    #check if the exit code is 0
     if [ $? -eq 0 ]; then
+    #prints success if exit code is 0
         echo "IAM group '$groupname' created successfully."
     else
+    #prints unsuccessfull if the code is 1
         echo "Failed to create IAM group '$groupname'."
     fi
 
+    #sets the arn for "AdministratorAccess" to policyarn variable
     policyarn="arn:aws:iam::aws:policy/AdministratorAccess"
 
+    #uses the policy arn to attach policy to groupname
     aws iam attach-group-policy --policy-arn "$policyarn"  --group-name "$groupname"
+    #check if the exit code is 0
     if [ $? -eq 0 ]; then
+    #prints success if exit code is 0
         echo "Administrative policy sucessfully attached to Admins group."
     else
+    #prints unsuccessfull if the code is 1
         echo "Administrative policy couln't be attached to Admins group."
     fi
 
@@ -129,11 +140,15 @@ add_user_to_group () {
     names=("Tom" "Bob" "John" "Sam" "Jack")
     groupname="Admins"
 
+    #Loops through the array and adds each IAM user to the specified groupname
     for name in "${names[@]}"; do
         aws iam add-user-to-group --user-name "$name" --group-name "$groupname"
+        #check if the exit code is 0
         if [ $? -eq 0 ]; then
+        #prints success if exit code is 0
             echo "'$name' has been sucessfully added to the '$groupname' group."
         else
+        #prints unsuccessfull if the code is 1
             echo "'$name' could not be sucessfully added to the '$groupname' group."
         fi
     done
