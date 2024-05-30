@@ -41,10 +41,10 @@ check_aws_profile() {
     fi
 }
 
-create_keypair () {
+# Function to create EC2 Instances
+create_ec2_instances() {
 
     keyname="testkey"
-
     aws ec2 create-key-pair --key-name "$keyname"
     
     if [ $? -eq 0 ]; then
@@ -52,11 +52,6 @@ create_keypair () {
     else
         echo "Failed to create '$keyname'"
     fi
-
-}
-
-# Function to create EC2 Instances
-create_ec2_instances() {
 
     # Specify the parameters for the EC2 instances
     instance_type="t3.micro"
@@ -68,7 +63,7 @@ create_ec2_instances() {
     aws ec2 run-instances \
         --image-id "$ami_id" \
         --instance-type "$instance_type" \
-        --key-name webserver \
+        --key-name "$keyname" \
         --count $count \
         --subnet-id subnet-0e0574c63101013c5
         
