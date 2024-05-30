@@ -41,6 +41,20 @@ check_aws_profile() {
     fi
 }
 
+create_keypair () {
+
+    keyname="testkey"
+
+    aws ec2 create-key-pair --key-name "$keyname"
+    
+    if [ $? -eq 0 ]; then
+        echo "'$keyname' created successfully."
+    else
+        echo "Failed to create '$keyname'"
+    fi
+
+}
+
 # Function to create EC2 Instances
 create_ec2_instances() {
 
