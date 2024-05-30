@@ -87,9 +87,64 @@ create_s3_buckets() {
     done
 }
 
+create_IAM_users() {
+    #Array of user names
+    names=("Tom" "Bob" "John" "Sam" "Jack")
+    
+    #Loop through the array and create IAM user for each employee
+    for name in "${names[@]}"; do
+        aws iam create-user --user-name "$name"
+        if [ $? -eq 0 ]; then
+           echo "IAM user for '$name' created successfully."
+        else
+            echo "Failed to create IAM user for '$bucket_name'."
+        fi
+    done
+}
+
+create_IAM_group() {
+
+    groupname="Admins"
+
+    aws iam create-group --group-name "$groupname"
+    if [ $? -eq 0 ]; then
+        echo "IAM group '$groupname' created successfully."
+    else
+        echo "Failed to create IAM group '$groupname'."
+    fi
+
+    policyarn="arn:aws:iam::aws:policy/AdministratorAccess"
+
+    aws iam attach-group-policy --policy-arn "$policyarn"  --group-name "$groupname"
+    if [ $? -eq 0 ]; then
+        echo "Administrative policy sucessfully attached to Admins group."
+    else
+        echo "Administrative policy couln't be attached to Admins group."
+    fi
+
+}
+
+add_user_to_group () {
+
+    names=("Tom" "Bob" "John" "Sam" "Jack")
+    groupname="Admins"
+
+    for name in "${names[@]}"; do
+        aws iam add-user-to-group --user-name "$name" --group-name "$groupname"
+        if [ $? -eq 0 ]; then
+            echo "'$name' has been sucessfully added to the '$groupname' group."
+        else
+            echo "'$name' could not be sucessfully added to the '$groupname' group."
+        fi
+    done
+}
+
 check_num_of_args
 activate_infra_environment
 check_aws_cli
 check_aws_profile
 create_ec2_instances
 create_s3_buckets
+create_IAM_users
+create_IAM_group
+add_user_to_group
